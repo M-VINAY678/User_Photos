@@ -1,0 +1,30 @@
+#albumContainer,
+#photoContainer {
+    display: flex;
+    gap: 30px;
+    margin: 50px;
+    flex-wrap: wrap;
+
+    div {
+        align-content: center;
+        text-align: center;
+    }
+
+    .flex-items {
+        border: 1px solid black;
+        width: 100px;
+        height: 100px;
+    }
+
+    .photo-flex-items {
+        border: 1px solid black;
+        width: 300px;
+        height: 100px;
+    }
+
+    .style_content {
+        margin-left: 20px;
+        margin-right: 20px;
+        text-align: justify;
+    }
+}
