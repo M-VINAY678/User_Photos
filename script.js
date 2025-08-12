@@ -1,74 +1,82 @@
 
-const flexContainer1 = document.getElementById("flexContainer1");
-const flexContainer = document.getElementById("flexContainer");
-async function fetching_users(params) {
-    let response = await fetch("https://jsonplaceholder.typicode.com/users");
-    let users = await response.json();
-    return users;
-    /*for (user in users) {
-        console.log(users[user].id);
-        console.log(users[user].name);
-    }*/
-
-}
-async function fetching_albums(user_id) {
-    let response = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${user_id}`);
-    let userAlbums = await response.json();
-    //const  = albums.filter(album => album.userId === user_id);
-    flexContainer.innerHTML="";
-    userAlbums.forEach((album)=> {
-        const flexItem = document.createElement("div");
-        flexItem.textContent = `album ${album.id}`;
-        flexItem.className="flex-items";
-        flexItem.addEventListener("click", () => {
-            fetching_photo(album.id);
-        });
-        flexContainer.appendChild(flexItem);
+const photoContainer = document.getElementById("photoContainer");
+const albumContainer = document.getElementById("albumContainer");
+const fetchUsers = async () => {
+    try {
+        let userResponse = await fetch("https://jsonplaceholder.typicode.com/users");
+        let users = await userResponse.json();
+        return users;
+    } catch (error) {
+        console.error();
     }
-    );
 }
-async function fetching_photo(album_id) {
-    let response = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${album_id}`);
-    let photos = await response.json();
-    flexContainer1.innerHTML = "";
-    photos.forEach((photo)=>{
+async function fetchAlbums(userId) {
+    try {
+        let albumResponse = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=${userId}`);
+        let userAlbums = await albumResponse.json();
+        albumContainer.innerHTML = "";
+        userAlbums.forEach((album) => {
+            const flexItem = document.createElement("div");
+            flexItem.textContent = `album ${album.id}`;
+            flexItem.className = "flex-items";
+            flexItem.addEventListener("click", () => {
+                fetchPhotos(album.id);
+            });
+            albumContainer.appendChild(flexItem);
+        }
+        );
+    } catch (error) {
+        console.error();
+    }
+}
+async function photo(albumId) {
+    try {
+        let photoResponse = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`);
+        let photos = await photoResponse.json();
+        return photos;
+    } catch (error) {
+        console.error();
+    }
+}
+async function fetchPhotos(albumId) {
+    try {
+        let photos = await photo(albumId);
+        photoContainer.innerHTML = "";
+        photos.forEach((photo) => {
             const flexItem = document.createElement("div");
             const flexItem_id = document.createElement("div");
             const flexItem_title = document.createElement("div");
-            flexItem_id.textContent = `Album :${album_id}`;
+            flexItem_id.textContent = `Album :${albumId}`;
             flexItem_title.textContent = `${photo.title}`;
-            flexItem_title.className="style_content";
+            flexItem_title.className = "style_content";
             flexItem.appendChild(flexItem_id);
             flexItem.appendChild(flexItem_title);
-            flexItem.className="photo-flex-items"
-            flexContainer1.appendChild(flexItem);
-    })
+            flexItem.className = "photo-flex-items"
+            photoContainer.appendChild(flexItem);
+        })
+    } catch (error) {
+        console.error();
+    }
+}
+const handleUserChange = () => {
+    albumContainer.innerHTML = "";
+    photoContainer.innerHTML = "";
+    fetchAlbums(userSelect.value);
 }
 async function dropdown() {
-    const select = document.getElementById('userSelect');
-    const users = await fetching_users();
-    users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = user.name;
-        select.appendChild(option);
-    });
-    /*return new Promise((resolve) => {
-        select.addEventListener('change', () => {
-            const selectedUserId = parseInt(select.value);
-            console.log("Selected User ID:", selectedUserId);
-            resolve(selectedUserId)
+    try {
+        const userSelect = document.getElementById('userSelect');
+        userSelect.removeEventListener('change', handleUserChange);
+        const users = await fetchUsers();
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.name;
+            userSelect.appendChild(option);
         });
-    })*/
-    select.addEventListener('change', () => {
-        flexContainer.innerHTML="";
-        flexContainer1.innerHTML="";
-        fetching_albums(select.value);
-    });
+        userSelect.addEventListener('change', handleUserChange);
+    } catch (error) {
+        console.error();
+    }
 }
-/*async function main() {
-    let res1 = await dropdown();
-    let res2 = await fetching_albums(res1);
-}
-main();*/
 dropdown();
